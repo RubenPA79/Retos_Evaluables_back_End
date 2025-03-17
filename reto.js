@@ -13,7 +13,7 @@ if (fs.existsSync(path)) {
     fs.unlinkSync(path);
 }
 
-// Preguntar al usuario por los datos
+// Preguntar al usuario por SUS datos
 rl.question('Ingrese su nombre: ', (name) => {
     rl.question('Ingrese su apellido: ', (surname) => {
         rl.question('Ingrese su edad: ', (age) => {
@@ -26,7 +26,7 @@ rl.question('Ingrese su nombre: ', (name) => {
                 } else {
                     console.log('Datos guardados en', path);
 
-                    // Leer el archivo JSON e imprimir su contenido en consola
+                    // Lectura del archivo JSON e impresion de su contenido en consola
                     fs.readFile(path, 'utf8', (err, data) => {
                         if (err) {
                             console.error('Error al leer el archivo:', err);
