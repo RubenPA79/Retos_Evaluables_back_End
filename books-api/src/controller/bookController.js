@@ -1,28 +1,74 @@
-const books = [
-    { id_book: 1, id_user: 1, title: "Libro 1", type: "Ficción", author: "Autor 1", price: 10.99, photo: "foto1.jpg" },
-    { id_book: 2, id_user: 2, title: "Libro 2", type: "Ciencia", author: "Autor 2", price: 15.50, photo: "foto2.jpg" }
-];
+// src/controller/bookController.js
 
-// Obtener todos los libros
-const getBooks = (req, res) => {
-    res.json(books);
+const books = [];
+
+let nextId = 1;
+
+// GET: Obtener todos los libros
+const getAllBooks = (req, res) => {
+  res.status(200).json(books);
 };
 
-// Obtener un libro por ID
+// GET: Obtener libro por ID
 const getBookById = (req, res) => {
-    const book = books.find(b => b.id_book == req.params.id);
-    if (book) {
-        res.json(book);
-    } else {
-        res.status(404).json({ message: "Libro no encontrado" });
-    }
+  const id = parseInt(req.query.id);
+  const book = books.find((b) => b.id_book === id);
+
+  if (book) {
+    res.status(200).json(book);
+  } else {
+    res.status(404).json({ message: "Libro no encontrado" });
+  }
 };
 
-// Agregar un libro nuevo
-const addBook = (req, res) => {
-    const newBook = req.body;
-    books.push(newBook);
-    res.status(201).json(newBook);
+// POST: Añadir nuevo libro
+const createBook = (req, res) => {
+  const { id_user, title, type, author, price, photo } = req.body;
+
+  const newBook = {
+    id_book: nextId++,
+    id_user,
+    title,
+    type,
+    author,
+    price,
+    photo,
+  };
+
+  books.push(newBook);
+  res.status(201).json(newBook);
 };
 
-module.exports = { getBooks, getBookById, addBook };
+// PUT: Modificar libro existente
+const updateBook = (req, res) => {
+  const id = parseInt(req.query.id);
+  const bookIndex = books.findIndex((b) => b.id_book === id);
+
+  if (bookIndex !== -1) {
+    books[bookIndex] = { ...books[bookIndex], ...req.body };
+    res.status(200).json(books[bookIndex]);
+  } else {
+    res.status(404).json({ message: "Libro no encontrado" });
+  }
+};
+
+// DELETE: Eliminar libro por ID
+const deleteBook = (req, res) => {
+  const id = parseInt(req.query.id);
+  const bookIndex = books.findIndex((b) => b.id_book === id);
+
+  if (bookIndex !== -1) {
+    const deleted = books.splice(bookIndex, 1);
+    res.status(200).json(deleted[0]);
+  } else {
+    res.status(404).json({ message: "Libro no encontrado" });
+  }
+};
+
+module.exports = {
+  getAllBooks,
+  getBookById,
+  createBook,
+  updateBook,
+  deleteBook,
+};

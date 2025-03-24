@@ -1,9 +1,28 @@
+// src/routes/bookRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const { getBooks, getBookById, addBook } = require('../controller/bookController');
+const {
+  getAllBooks,
+  getBookById,
+  createBook,
+  updateBook,
+  deleteBook,
+} = require('../controller/bookController');
 
-router.get('/', getBooks);
-router.get('/:id', getBookById);
-router.post('/', addBook);
+// GET todos los libros
+router.get('/books', getAllBooks);
+
+// GET libro por ID
+router.get('/books/search', getBookById); // Por query param ?id=1
+
+// POST nuevo libro
+router.post('/books', createBook);
+
+// PUT actualizar libro
+router.put('/books', updateBook);
+
+// DELETE eliminar libro
+router.delete('/books', deleteBook);
 
 module.exports = router;
