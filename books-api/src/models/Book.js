@@ -1,12 +1,12 @@
 class Book {
-    constructor(id_book, id_user, title, type, author, price, photo) {
-        this.id_book = id_book;
-        this.id_user = id_user;
-        this.title = title;
-        this.type = type;
-        this.author = author;
-        this.price = price;
-        this.photo = photo;
+    constructor(data) {
+        this.id_book = data.id_book || Date.now(); // ID único
+        this.id_user = data.id_user || null;
+        this.title = data.title;
+        this.type = data.type || null;
+        this.author = data.author;
+        this.price = data.price || null;
+        this.photo = data.photo || null;
     }
 }
 

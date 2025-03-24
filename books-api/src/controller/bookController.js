@@ -1,74 +1,73 @@
-// src/controller/bookController.js
+const Book = require('../models/Book');
+let books = []; // "Base de datos" temporal
 
-const books = [];
+// GET - todos o por id
+const getBooks = (req, res, next) => {
+    try {
+        const { id } = req.query;
 
-let nextId = 1;
+        if (id) {
+            const book = books.find(b => b.id_book == id);
+            if (!book) return res.status(404).json({ error: 'Libro no encontrado' });
+            return res.json(book);
+        }
 
-// GET: Obtener todos los libros
-const getAllBooks = (req, res) => {
-  res.status(200).json(books);
+        res.json(books);
+    } catch (error) {
+        next(error);
+    }
 };
 
-// GET: Obtener libro por ID
-const getBookById = (req, res) => {
-  const id = parseInt(req.query.id);
-  const book = books.find((b) => b.id_book === id);
+// POST - agregar nuevo libro
+const addBook = (req, res, next) => {
+    try {
+        const { title, author } = req.body;
 
-  if (book) {
-    res.status(200).json(book);
-  } else {
-    res.status(404).json({ message: "Libro no encontrado" });
-  }
+        if (!title || !author) {
+            return res.status(400).json({ error: 'Título y autor son requeridos' });
+        }
+
+        const newBook = new Book(req.body);
+        books.push(newBook);
+        res.status(201).json(newBook);
+    } catch (error) {
+        next(error);
+    }
 };
 
-// POST: Añadir nuevo libro
-const createBook = (req, res) => {
-  const { id_user, title, type, author, price, photo } = req.body;
+// PUT - actualizar libro por id
+const updateBook = (req, res, next) => {
+    try {
+        const { id } = req.query;
+        const index = books.findIndex(b => b.id_book == id);
 
-  const newBook = {
-    id_book: nextId++,
-    id_user,
-    title,
-    type,
-    author,
-    price,
-    photo,
-  };
+        if (index === -1) return res.status(404).json({ error: 'Libro no encontrado' });
 
-  books.push(newBook);
-  res.status(201).json(newBook);
+        books[index] = { ...books[index], ...req.body };
+        res.json(books[index]);
+    } catch (error) {
+        next(error);
+    }
 };
 
-// PUT: Modificar libro existente
-const updateBook = (req, res) => {
-  const id = parseInt(req.query.id);
-  const bookIndex = books.findIndex((b) => b.id_book === id);
+// DELETE - eliminar libro por id
+const deleteBook = (req, res, next) => {
+    try {
+        const { id } = req.query;
+        const index = books.findIndex(b => b.id_book == id);
 
-  if (bookIndex !== -1) {
-    books[bookIndex] = { ...books[bookIndex], ...req.body };
-    res.status(200).json(books[bookIndex]);
-  } else {
-    res.status(404).json({ message: "Libro no encontrado" });
-  }
-};
+        if (index === -1) return res.status(404).json({ error: 'Libro no encontrado' });
 
-// DELETE: Eliminar libro por ID
-const deleteBook = (req, res) => {
-  const id = parseInt(req.query.id);
-  const bookIndex = books.findIndex((b) => b.id_book === id);
-
-  if (bookIndex !== -1) {
-    const deleted = books.splice(bookIndex, 1);
-    res.status(200).json(deleted[0]);
-  } else {
-    res.status(404).json({ message: "Libro no encontrado" });
-  }
+        const deleted = books.splice(index, 1);
+        res.json({ message: 'Libro eliminado', book: deleted[0] });
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = {
-  getAllBooks,
-  getBookById,
-  createBook,
-  updateBook,
-  deleteBook,
+    getBooks,
+    addBook,
+    updateBook,
+    deleteBook
 };
